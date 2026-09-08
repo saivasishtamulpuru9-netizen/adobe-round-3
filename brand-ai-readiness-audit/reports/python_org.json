@@ -1,0 +1,219 @@
+{
+  "site": "www.python.org",
+  "audited_at": "2026-09-08T06:15:15.790946Z",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-08T06:15:15.790946Z",
+  "target_url": "https://www.python.org/",
+  "pages_audited": [
+    "https://www.python.org/"
+  ],
+  "audit_config": {
+    "max_pages": 1,
+    "timeout_seconds": 30,
+    "skills_run": [
+      "crawl-render-audit",
+      "freshness-corroboration",
+      "engagement-audit",
+      "entity-disambiguation"
+    ]
+  },
+  "summary": {
+    "total_findings": 8,
+    "critical": 0,
+    "high": 0,
+    "medium": 4,
+    "low": 4,
+    "critical_findings": 0,
+    "high_findings": 0,
+    "medium_findings": 4,
+    "low_findings": 4,
+    "total_flag_only": 2,
+    "total_strengths": 1,
+    "overall_health": "fair",
+    "category_scores": {
+      "DV": 2,
+      "FS": 3,
+      "EN": 1,
+      "ED": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "DV-02",
+      "title": "Missing/empty head tags: twitter:title, twitter:description",
+      "severity": "medium",
+      "evidence": "Page https://www.python.org/ is missing these <head> fields (absent or empty): twitter:title, twitter:description.",
+      "suggested_action": {
+        "summary": "Add a meta description and OG/Twitter tags summarising 'Welcome to Python.org' — currently twitter:title, twitter:description are empty, giving AI assistants no summary text to preview or cite.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "DV-11",
+      "title": "No company-level orientation text on homepage",
+      "severity": "medium",
+      "evidence": "The homepage https://www.python.org/ contains no sentence that states what 'Welcome to Python.org' is as a company/platform. The page describes individual products or features but never introduces the parent entity.",
+      "suggested_action": {
+        "summary": "Add a short 'what is Welcome to Python.org' section (2–3 plain-text sentences) to the homepage — AI assistants use this to understand and cite the entity accurately.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "FS-01",
+      "title": "Stale 'copyright notice' references 2001 (9017 days ago)",
+      "severity": "medium",
+      "evidence": "Page https://www.python.org/ contains a 'copyright notice' referencing 2001, which is 9017 days in the past. Snippet: '<span class=\"pre\">Copyright &copy;2001-2026.</span>'.",
+      "suggested_action": {
+        "summary": "Remove or update the copyright notice referencing 2001 — that date has passed, and a stale 'current' claim undermines freshness signals for the whole page, especially when other content is actively maintained.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "ED-05",
+      "title": "Wikipedia/Wikidata linked in DOM but not in Organization schema sameAs",
+      "severity": "medium",
+      "evidence": "Page https://www.python.org/ links to Wikipedia/Wikidata from the DOM but does not include this URL in the Organization JSON-LD sameAs field.",
+      "suggested_action": {
+        "summary": "Add the Wikipedia/Wikidata URL to the Organization JSON-LD sameAs array for 'Welcome to Python.org' — it's already linked from the DOM; formalising it in structured data makes the entity-identity connection machine-readable.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "FS-03",
+      "title": "No 'last updated' or publication date signal on content page",
+      "severity": "low",
+      "evidence": "Page https://www.python.org/ has no article:published_time, no article:modified_time meta tag, and no visible 'last updated / as of [date]' text in the body.",
+      "suggested_action": {
+        "summary": "Add a visible 'last updated' or version note (e.g. 'Updated September 2026') so AI assistants have a freshness signal to cite confidently — undated content is treated as potentially stale.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "FS-04",
+      "title": "Nav lists 4 items not reflected in footer",
+      "severity": "low",
+      "evidence": "Page https://www.python.org/: navigation contains 4 substantive items absent from the footer: '▲the python network', 'skip to content', 'python'...",
+      "suggested_action": {
+        "summary": "Reconcile nav and footer listings — nav includes 4 items that footer omits, which reads as inconsistent/outdated to crawlers that use both components for site mapping.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "EN-08",
+      "title": "Stat element has no static value: 'User Group Events'",
+      "severity": "low",
+      "evidence": "Stat/counter element on https://www.python.org/ with label 'User Group Events' has no digit value in raw HTML — likely a JS count-up with no static fallback.",
+      "suggested_action": {
+        "summary": "Provide a real static fallback value in the HTML for 'User Group Events' (JS can still animate the count-up visually) — currently no value appears in a static read.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "ED-04",
+      "title": "Social links present in DOM but not in Organization schema sameAs",
+      "severity": "low",
+      "evidence": "Page https://www.python.org/ links to social profiles (https://www.linkedin.com/company/python-software-foundation/, https://twitter.com/ThePSF) from the page DOM, but these are not included in the Organization JSON-LD sameAs field for machine-readable entity corroboration.",
+      "suggested_action": {
+        "summary": "Add the social profile URLs (https://www.linkedin.com/company/python-software-foundation/, https://twitter.com/ThePSF) to the Organization JSON-LD sameAs array — DOM links help human visitors but structured-data sameAs is what AI assistants and knowledge graph indexers use to associate social profiles with the brand entity.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://www.python.org/"
+      ]
+    }
+  ],
+  "flag_only_items": [
+    {
+      "id": "FS-05",
+      "type": "flag_only",
+      "reason": "Facts on https://www.python.org/ should be spot-checked against third-party directories, retailers, or press coverage for outdated versions (old price, old logo, discontinued product, changed leadership). This requires checking sources beyond this page and cannot be confirmed from a single-page fetch.",
+      "recommendation": "Manually spot-check key facts (pricing, team, product specs, statistics) against third-party sources (Google My Business, LinkedIn, press coverage, industry directories) to identify and correct any outdated information circulating externally.",
+      "pages": [
+        "https://www.python.org/"
+      ]
+    },
+    {
+      "id": "EN-06",
+      "type": "flag_only",
+      "reason": "Deep-link matching cannot be verified from a single-page fetch of https://www.python.org/. AI assistants referring visitors to a brand may link to the homepage rather than the specific product/service page matching the user's query.",
+      "recommendation": "Ensure AI-assistant-referred and search-referred visitors land on the specific product/service page matching their query, not the homepage — verify that deep links exist for each key product/service, with unique URLs and descriptive titles. Test by asking an AI assistant about your key products and checking where it links.",
+      "pages": [
+        "https://www.python.org/"
+      ]
+    }
+  ],
+  "strengths": [
+    {
+      "id": "EN-10",
+      "title": "Clear layered navigation: 65 named nav sections, 73 footer sitemap links — good orientation for both visitors and crawlers."
+    }
+  ],
+  "suggested_actions": [
+    {
+      "summary": "Add a meta description and OG/Twitter tags summarising 'Welcome to Python.org' — currently twitter:title, twitter:description are empty, giving AI assistants no summary text to preview or cite.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add a short 'what is Welcome to Python.org' section (2–3 plain-text sentences) to the homepage — AI assistants use this to understand and cite the entity accurately.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Remove or update the copyright notice referencing 2001 — that date has passed, and a stale 'current' claim undermines freshness signals for the whole page, especially when other content is actively maintained.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add the Wikipedia/Wikidata URL to the Organization JSON-LD sameAs array for 'Welcome to Python.org' — it's already linked from the DOM; formalising it in structured data makes the entity-identity connection machine-readable.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add a visible 'last updated' or version note (e.g. 'Updated September 2026') so AI assistants have a freshness signal to cite confidently — undated content is treated as potentially stale.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Reconcile nav and footer listings — nav includes 4 items that footer omits, which reads as inconsistent/outdated to crawlers that use both components for site mapping.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Provide a real static fallback value in the HTML for 'User Group Events' (JS can still animate the count-up visually) — currently no value appears in a static read.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Add the social profile URLs (https://www.linkedin.com/company/python-software-foundation/, https://twitter.com/ThePSF) to the Organization JSON-LD sameAs array — DOM links help human visitors but structured-data sameAs is what AI assistants and knowledge graph indexers use to associate social profiles with the brand entity.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Publish an /llms.txt file at domain root listing key crawlable content and documentation.",
+      "priority": "low",
+      "detail": "/llms.txt is an emerging standard enabling AI crawlers to discover high-priority markdown and plain-text resources with minimal crawl overhead."
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "site": "127.0.0.1:8899",
+  "audited_at": "2026-09-08T06:16:00.702973Z",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-08T06:16:00.702973Z",
+  "target_url": "http://127.0.0.1:8899/noindex",
+  "pages_audited": [
+    "http://127.0.0.1:8899/noindex"
+  ],
+  "audit_config": {
+    "max_pages": 1,
+    "timeout_seconds": 30,
+    "skills_run": [
+      "crawl-render-audit",
+      "freshness-corroboration",
+      "engagement-audit",
+      "entity-disambiguation"
+    ]
+  },
+  "summary": {
+    "total_findings": 2,
+    "critical": 0,
+    "high": 0,
+    "medium": 2,
+    "low": 0,
+    "critical_findings": 0,
+    "high_findings": 0,
+    "medium_findings": 2,
+    "low_findings": 0,
+    "total_flag_only": 2,
+    "total_strengths": 0,
+    "overall_health": "good",
+    "category_scores": {
+      "DV": 0,
+      "FS": 0,
+      "EN": 0,
+      "ED": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "ED-03",
+      "title": "Brand name casing inconsistency: 'Internal Search Results' (1\u00d7) vs [\"'internal search results'\"] (1\u00d7)",
+      "severity": "medium",
+      "evidence": "Page http://127.0.0.1:8899/noindex uses 'Internal Search Results' as the brand name 1 time(s) but also uses ['internal search results'] (1 total minority instances, 50% inconsistency rate). AI assistants that extract brand names from text will encounter multiple forms and may treat them as different entities.",
+      "suggested_action": {
+        "summary": "Standardise the brand name to a single canonical form ('Internal Search Results') across all occurrences \u2014 currently 1 variant form(s) appear at a 50% inconsistency rate.",
+        "priority": "medium"
+      },
+      "pages": [
+        "http://127.0.0.1:8899/noindex"
+      ]
+    },
+    {
+      "id": "ED-04",
+      "title": "No official social profile links found for 'Internal Search Results'",
+      "severity": "medium",
+      "evidence": "Page http://127.0.0.1:8899/noindex has no links to official social profiles (LinkedIn, Twitter/X, Facebook, GitHub, etc.) in DOM or structured data sameAs.",
+      "suggested_action": {
+        "summary": "Add official social profile URLs for 'Internal Search Results' to the footer AND to the Organization JSON-LD sameAs field \u2014 social profiles allow AI assistants to corroborate entity identity across platforms.",
+        "priority": "medium"
+      },
+      "pages": [
+        "http://127.0.0.1:8899/noindex"
+      ]
+    }
+  ],
+  "flag_only_items": [
+    {
+      "id": "FS-05",
+      "type": "flag_only",
+      "reason": "Facts on http://127.0.0.1:8899/noindex should be spot-checked against third-party directories, retailers, or press coverage for outdated versions (old price, old logo, discontinued product, changed leadership). This requires checking sources beyond this page and cannot be confirmed from a single-page fetch.",
+      "recommendation": "Manually spot-check key facts (pricing, team, product specs, statistics) against third-party sources (Google My Business, LinkedIn, press coverage, industry directories) to identify and correct any outdated information circulating externally.",
+      "pages": [
+        "http://127.0.0.1:8899/noindex"
+      ]
+    },
+    {
+      "id": "ED-05",
+      "type": "flag_only",
+      "reason": "No Wikipedia or Wikidata link found on http://127.0.0.1:8899/noindex for 'Internal Search Results'. An external search step is required to determine whether a Wikipedia or Wikidata entry exists for this entity.",
+      "recommendation": "Search Wikipedia for 'Internal Search Results' and Wikidata for a Q-number. If an entry exists: add the URL to the Organization sameAs field to anchor entity identity. If no entry exists: consider creating a neutral, sourced Wikipedia stub or a Wikidata entry \u2014 this provides the strongest possible machine-readable identity signal for AI assistants.",
+      "pages": [
+        "http://127.0.0.1:8899/noindex"
+      ]
+    }
+  ],
+  "strengths": [],
+  "suggested_actions": [
+    {
+      "summary": "Standardise the brand name to a single canonical form ('Internal Search Results') across all occurrences \u2014 currently 1 variant form(s) appear at a 50% inconsistency rate.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add official social profile URLs for 'Internal Search Results' to the footer AND to the Organization JSON-LD sameAs field \u2014 social profiles allow AI assistants to corroborate entity identity across platforms.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Publish an /llms.txt file at domain root listing key crawlable content and documentation.",
+      "priority": "low",
+      "detail": "/llms.txt is an emerging standard enabling AI crawlers to discover high-priority markdown and plain-text resources with minimal crawl overhead."
+    }
+  ]
+}

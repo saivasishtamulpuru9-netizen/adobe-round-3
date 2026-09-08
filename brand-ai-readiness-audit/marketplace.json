@@ -1,0 +1,28 @@
+{
+  "name": "brand-ai-readiness-audit",
+  "version": "1.0.0",
+  "description": "Audits any website for AI-discoverability and on-site-engagement problems, producing a structured report of findings and prioritized suggested actions.",
+  "skills": [
+    {
+      "id": "audit-orchestrator",
+      "path": "skills/audit-orchestrator",
+      "entrypoint": true
+    },
+    {
+      "id": "crawl-render-audit",
+      "path": "skills/crawl-render-audit"
+    },
+    {
+      "id": "freshness-corroboration",
+      "path": "skills/freshness-corroboration"
+    },
+    {
+      "id": "engagement-audit",
+      "path": "skills/engagement-audit"
+    },
+    {
+      "id": "entity-disambiguation",
+      "path": "skills/entity-disambiguation"
+    }
+  ]
+}

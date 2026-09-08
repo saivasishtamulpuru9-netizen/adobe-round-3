@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "brand-ai-readiness-audit/report",
+  "title": "Brand AI-Readiness Audit Report",
+  "description": "Schema for the structured JSON report produced by audit-orchestrator.",
+  "type": "object",
+  "required": ["site", "audited_at", "schema_version", "generated_at", "target_url", "pages_audited",
+               "summary", "findings", "flag_only_items", "strengths",
+               "suggested_actions"],
+  "properties": {
+    "site": {
+      "type": "string",
+      "description": "Domain or host of the audited site."
+    },
+    "audited_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when audit was performed."
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Semantic version of this report schema.",
+      "example": "1.0.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp of when the audit completed."
+    },
+    "target_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The root URL that was audited."
+    },
+    "pages_audited": {
+      "type": "array",
+      "description": "Ordered list of page URLs that were fetched during this audit.",
+      "items": { "type": "string", "format": "uri" }
+    },
+    "audit_config": {
+      "type": "object",
+      "description": "Runtime configuration used during the audit.",
+      "properties": {
+        "max_pages":      { "type": "integer" },
+        "timeout_seconds":{ "type": "integer" },
+        "skills_run":     { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "High-level score card.",
+      "required": ["total_findings", "critical_findings", "high_findings",
+                   "medium_findings", "low_findings", "total_flag_only",
+                   "total_strengths", "overall_health"],
+      "properties": {
+        "total_findings":   { "type": "integer" },
+        "critical":         { "type": "integer" },
+        "high":             { "type": "integer" },
+        "medium":           { "type": "integer" },
+        "low":              { "type": "integer" },
+        "critical_findings":{ "type": "integer" },
+        "high_findings":    { "type": "integer" },
+        "medium_findings":  { "type": "integer" },
+        "low_findings":     { "type": "integer" },
+        "total_flag_only":  { "type": "integer" },
+        "total_strengths":  { "type": "integer" },
+        "overall_health": {
+          "type": "string",
+          "enum": ["critical", "poor", "fair", "good", "excellent"],
+          "description": "Derived from weighted severity counts; see compose_report.py."
+        },
+        "category_scores": {
+          "type": "object",
+          "description": "Per-skill finding counts.",
+          "properties": {
+            "DV": { "type": "integer" },
+            "FS": { "type": "integer" },
+            "EN": { "type": "integer" },
+            "ED": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "description": "All scored findings, deduped and sorted by severity then page.",
+      "items": { "$ref": "#/definitions/Finding" }
+    },
+    "flag_only_items": {
+      "type": "array",
+      "description": "Items that require an external lookup to confirm. Not scored.",
+      "items": { "$ref": "#/definitions/FlagOnlyItem" }
+    },
+    "strengths": {
+      "type": "array",
+      "description": "Positive signals detected — entity identity, fresh timestamps, etc.",
+      "items": { "$ref": "#/definitions/Strength" }
+    },
+    "suggested_actions": {
+      "type": "array",
+      "description": "Deduplicated, prioritised list of recommended actions.",
+      "items": { "$ref": "#/definitions/SuggestedAction" }
+    },
+    "raw_per_page": {
+      "type": "array",
+      "description": "Optional — raw per-page skill results (omitted unless --verbose).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url":  { "type": "string" },
+          "dv":   { "type": "object" },
+          "fs":   { "type": "object" },
+          "en":   { "type": "object" },
+          "ed":   { "type": "object" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Finding": {
+      "type": "object",
+      "required": ["id", "title", "severity", "evidence", "suggested_action", "pages"],
+      "properties": {
+        "id":       { "type": "string", "pattern": "^(DV|FS|EN|ED)-\\d{2}$",
+                      "description": "Check ID, e.g. 'DV-01', 'EN-07'." },
+        "title":    { "type": "string" },
+        "severity": { "type": "string", "enum": ["critical","high","medium","low"] },
+        "evidence": { "type": "string",
+                      "description": "Human-readable evidence excerpt for the worst instance." },
+        "pages": {
+          "type": "array",
+          "description": "Page URLs on which this finding was detected.",
+          "items": { "type": "string", "format": "uri" }
+        },
+        "suggested_action": { "$ref": "#/definitions/SuggestedAction" }
+      }
+    },
+    "FlagOnlyItem": {
+      "type": "object",
+      "required": ["id", "type", "reason", "recommendation", "pages"],
+      "properties": {
+        "id":             { "type": "string" },
+        "type":           { "type": "string", "const": "flag_only" },
+        "reason":         { "type": "string" },
+        "recommendation": { "type": "string" },
+        "pages": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "Strength": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id":    { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "SuggestedAction": {
+      "type": "object",
+      "required": ["summary", "priority"],
+      "properties": {
+        "summary":  { "type": "string",
+                      "description": "One-sentence plain-English action." },
+        "priority": { "type": "string", "enum": ["critical","high","medium","low"] },
+        "detail":   { "type": "string",
+                      "description": "Optional extended guidance." }
+      }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "site": "127.0.0.1:8899",
+  "audited_at": "2026-09-08T06:15:59.468227Z",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-08T06:15:59.468227Z",
+  "target_url": "http://127.0.0.1:8899/bot-block",
+  "pages_audited": [
+    "http://127.0.0.1:8899/bot-block"
+  ],
+  "audit_config": {
+    "max_pages": 1,
+    "timeout_seconds": 30,
+    "skills_run": [
+      "crawl-render-audit",
+      "freshness-corroboration",
+      "engagement-audit",
+      "entity-disambiguation"
+    ]
+  },
+  "summary": {
+    "total_findings": 4,
+    "critical": 1,
+    "high": 1,
+    "medium": 0,
+    "low": 1,
+    "critical_findings": 1,
+    "high_findings": 1,
+    "medium_findings": 0,
+    "low_findings": 1,
+    "total_flag_only": 2,
+    "total_strengths": 0,
+    "overall_health": "poor",
+    "category_scores": {
+      "DV": 2,
+      "FS": 1,
+      "EN": 0,
+      "ED": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "DV-13",
+      "title": "Crawler blocked by bot-detection / WAF challenge",
+      "severity": "critical",
+      "evidence": "Fetch of http://127.0.0.1:8899/bot-block was rejected by a bot-detection or WAF layer (HTTP 403, reason: BOT_BLOCK). No HTML content was returned.",
+      "suggested_action": {
+        "summary": "Allowlist verified AI/search crawler user-agents (GPTBot, PerplexityBot, Googlebot) in the WAF, or serve a lightweight static/cached version of key public pages \u2014 no downstream fix can take effect until this is resolved.",
+        "priority": "critical"
+      },
+      "pages": [
+        "http://127.0.0.1:8899/bot-block"
+      ]
+    },
+    {
+      "id": "DV-17",
+      "title": "Third-party proxy content may fill citation gap for 127.0.0.1:8899",
+      "severity": "high",
+      "evidence": "Primary domain 127.0.0.1:8899 is inaccessible to automated agents (see DV-13). Agent step required: search '127.0.0.1:8899 [primary service or product]' and verify whether unofficial third-party sites outrank the blocked primary domain in AI-assistant / search results.",
+      "requires_agent_step": true,
+      "suggested_action": {
+        "summary": "Because 127.0.0.1:8899's primary domain is inaccessible, third-party sources may fill the citation gap. Resolving DV-13 is the root fix. In the interim, publish an officially-branded, crawlable lightweight guide page to compete for the same citation space.",
+        "priority": "high"
+      },
+      "pages": [
+        "http://127.0.0.1:8899/bot-block"
+      ]
+    },
+    {
+      "id": "ED-01",
+      "title": "Brand name '127' is very short and lacks disambiguation",
+      "severity": "low",
+      "evidence": "Brand name '127' is only 3 character(s). Page: http://127.0.0.1:8899/bot-block. Short names are inherently ambiguous without an external identifier.",
+      "suggested_action": {
+        "summary": "Add a sameAs or legalName field to the Organization JSON-LD to disambiguate '127' \u2014 short names can collide with many other entities of the same letters.",
+        "priority": "low"
+      },
+      "pages": [
+        "http://127.0.0.1:8899/bot-block"
+      ]
+    },
+    {
+      "id": "FS-03",
+      "title": "No freshness signal detected (needs raw-HTML verification)",
+      "severity": "unscored",
+      "confidence": "not_detected_in_pass",
+      "evidence": "Only a rendered-text view was available for http://127.0.0.1:8899/bot-block; a 'last edited' timestamp or article:published_time may exist in the raw <head> not captured in this pass.",
+      "suggested_action": {
+        "summary": "Re-run with raw-HTML fetch to confirm presence/absence of freshness metadata.",
+        "priority": "medium"
+      },
+      "pages": [
+        "http://127.0.0.1:8899/bot-block"
+      ]
+    }
+  ],
+  "flag_only_items": [
+    {
+      "id": "FS-05",
+      "type": "flag_only",
+      "reason": "Facts on http://127.0.0.1:8899/bot-block should be spot-checked against third-party directories, retailers, or press coverage for outdated versions (old price, old logo, discontinued product, changed leadership). This requires checking sources beyond this page and cannot be confirmed from a single-page fetch.",
+      "recommendation": "Manually spot-check key facts (pricing, team, product specs, statistics) against third-party sources (Google My Business, LinkedIn, press coverage, industry directories) to identify and correct any outdated information circulating externally.",
+      "pages": [
+        "http://127.0.0.1:8899/bot-block"
+      ]
+    },
+    {
+      "id": "ED-05",
+      "type": "flag_only",
+      "reason": "No Wikipedia or Wikidata link found on http://127.0.0.1:8899/bot-block for '127'. An external search step is required to determine whether a Wikipedia or Wikidata entry exists for this entity.",
+      "recommendation": "Search Wikipedia for '127' and Wikidata for a Q-number. If an entry exists: add the URL to the Organization sameAs field to anchor entity identity. If no entry exists: consider creating a neutral, sourced Wikipedia stub or a Wikidata entry \u2014 this provides the strongest possible machine-readable identity signal for AI assistants.",
+      "pages": [
+        "http://127.0.0.1:8899/bot-block"
+      ]
+    }
+  ],
+  "strengths": [],
+  "suggested_actions": [
+    {
+      "summary": "Allowlist verified AI/search crawler user-agents (GPTBot, PerplexityBot, Googlebot) in the WAF, or serve a lightweight static/cached version of key public pages \u2014 no downstream fix can take effect until this is resolved.",
+      "priority": "critical",
+      "detail": ""
+    },
+    {
+      "summary": "Because 127.0.0.1:8899's primary domain is inaccessible, third-party sources may fill the citation gap. Resolving DV-13 is the root fix. In the interim, publish an officially-branded, crawlable lightweight guide page to compete for the same citation space.",
+      "priority": "high",
+      "detail": ""
+    },
+    {
+      "summary": "Re-run with raw-HTML fetch to confirm presence/absence of freshness metadata.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add a sameAs or legalName field to the Organization JSON-LD to disambiguate '127' \u2014 short names can collide with many other entities of the same letters.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Publish an /llms.txt file at domain root listing key crawlable content and documentation.",
+      "priority": "low",
+      "detail": "/llms.txt is an emerging standard enabling AI crawlers to discover high-priority markdown and plain-text resources with minimal crawl overhead."
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "site": "kisansuvidha.gov.in",
+  "audited_at": "2026-09-08T06:10:49.365142Z",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-08T06:10:49.365142Z",
+  "target_url": "https://kisansuvidha.gov.in/",
+  "pages_audited": [
+    "https://kisansuvidha.gov.in/"
+  ],
+  "audit_config": {
+    "max_pages": 1,
+    "timeout_seconds": 30,
+    "skills_run": [
+      "crawl-render-audit",
+      "freshness-corroboration",
+      "engagement-audit",
+      "entity-disambiguation"
+    ]
+  },
+  "summary": {
+    "total_findings": 6,
+    "critical": 2,
+    "high": 0,
+    "medium": 3,
+    "low": 1,
+    "critical_findings": 2,
+    "high_findings": 0,
+    "medium_findings": 3,
+    "low_findings": 1,
+    "total_flag_only": 2,
+    "total_strengths": 0,
+    "overall_health": "poor",
+    "category_scores": {
+      "DV": 4,
+      "FS": 1,
+      "EN": 0,
+      "ED": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "DV-01",
+      "title": "JS-render gap: populated <head> but essentially empty body",
+      "severity": "critical",
+      "evidence": "Raw HTML fetch of https://kisansuvidha.gov.in/ returned only 2 body words despite a populated <head> (title='Kisan Suvidha'). All content is likely assembled by client-side JavaScript.",
+      "suggested_action": {
+        "summary": "Move content for 'Kisan Suvidha' to server-side rendering (SSR) or a static prerender step — currently {wc} words appear in raw HTML, leaving crawlers with nothing to index. This page is routed to EN-13 (engagement not assessed).",
+        "priority": "critical"
+      },
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    },
+    {
+      "id": "DV-03",
+      "title": "No valid JSON-LD structured data (Organization expected)",
+      "severity": "critical",
+      "evidence": "Raw HTML of https://kisansuvidha.gov.in/ contains 0 JSON-LD script block(s), none of which parsed as a valid schema.org object.",
+      "suggested_action": {
+        "summary": "Add Organization JSON-LD to this homepage/landing page — currently 0 valid structured data blocks are present; crawlers have no machine-readable identity or facts to extract.",
+        "priority": "critical"
+      },
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    },
+    {
+      "id": "DV-02",
+      "title": "Missing/empty head tags: og:image",
+      "severity": "medium",
+      "evidence": "Page https://kisansuvidha.gov.in/ is missing these <head> fields (absent or empty): og:image.",
+      "suggested_action": {
+        "summary": "Add a meta description and OG/Twitter tags summarising 'Kisan Suvidha' — currently og:image are empty, giving AI assistants no summary text to preview or cite.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    },
+    {
+      "id": "DV-11",
+      "title": "No company-level orientation text on homepage",
+      "severity": "medium",
+      "evidence": "The homepage https://kisansuvidha.gov.in/ contains no sentence that states what 'Kisan Suvidha' is as a company/platform. The page describes individual products or features but never introduces the parent entity.",
+      "suggested_action": {
+        "summary": "Add a short 'what is Kisan Suvidha' section (2–3 plain-text sentences) to the homepage — AI assistants use this to understand and cite the entity accurately.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    },
+    {
+      "id": "ED-04",
+      "title": "No official social profile links found for 'Kisan Suvidha'",
+      "severity": "medium",
+      "evidence": "Page https://kisansuvidha.gov.in/ has no links to official social profiles (LinkedIn, Twitter/X, Facebook, GitHub, etc.) in DOM or structured data sameAs.",
+      "suggested_action": {
+        "summary": "Add official social profile URLs for 'Kisan Suvidha' to the footer AND to the Organization JSON-LD sameAs field — social profiles allow AI assistants to corroborate entity identity across platforms.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    },
+    {
+      "id": "FS-03",
+      "title": "No 'last updated' or publication date signal on content page",
+      "severity": "low",
+      "evidence": "Page https://kisansuvidha.gov.in/ has no article:published_time, no article:modified_time meta tag, and no visible 'last updated / as of [date]' text in the body.",
+      "suggested_action": {
+        "summary": "Add a visible 'last updated' or version note (e.g. 'Updated September 2026') so AI assistants have a freshness signal to cite confidently — undated content is treated as potentially stale.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    }
+  ],
+  "flag_only_items": [
+    {
+      "id": "FS-05",
+      "type": "flag_only",
+      "reason": "Facts on https://kisansuvidha.gov.in/ should be spot-checked against third-party directories, retailers, or press coverage for outdated versions (old price, old logo, discontinued product, changed leadership). This requires checking sources beyond this page and cannot be confirmed from a single-page fetch.",
+      "recommendation": "Manually spot-check key facts (pricing, team, product specs, statistics) against third-party sources (Google My Business, LinkedIn, press coverage, industry directories) to identify and correct any outdated information circulating externally.",
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    },
+    {
+      "id": "ED-05",
+      "type": "flag_only",
+      "reason": "No Wikipedia or Wikidata link found on https://kisansuvidha.gov.in/ for 'Kisan Suvidha'. An external search step is required to determine whether a Wikipedia or Wikidata entry exists for this entity.",
+      "recommendation": "Search Wikipedia for 'Kisan Suvidha' and Wikidata for a Q-number. If an entry exists: add the URL to the Organization sameAs field to anchor entity identity. If no entry exists: consider creating a neutral, sourced Wikipedia stub or a Wikidata entry — this provides the strongest possible machine-readable identity signal for AI assistants.",
+      "pages": [
+        "https://kisansuvidha.gov.in/"
+      ]
+    }
+  ],
+  "strengths": [],
+  "suggested_actions": [
+    {
+      "summary": "Move content for 'Kisan Suvidha' to server-side rendering (SSR) or a static prerender step — currently {wc} words appear in raw HTML, leaving crawlers with nothing to index. This page is routed to EN-13 (engagement not assessed).",
+      "priority": "critical",
+      "detail": ""
+    },
+    {
+      "summary": "Add Organization JSON-LD to this homepage/landing page — currently 0 valid structured data blocks are present; crawlers have no machine-readable identity or facts to extract.",
+      "priority": "critical",
+      "detail": ""
+    },
+    {
+      "summary": "Add a meta description and OG/Twitter tags summarising 'Kisan Suvidha' — currently og:image are empty, giving AI assistants no summary text to preview or cite.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add a short 'what is Kisan Suvidha' section (2–3 plain-text sentences) to the homepage — AI assistants use this to understand and cite the entity accurately.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add official social profile URLs for 'Kisan Suvidha' to the footer AND to the Organization JSON-LD sameAs field — social profiles allow AI assistants to corroborate entity identity across platforms.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add a visible 'last updated' or version note (e.g. 'Updated September 2026') so AI assistants have a freshness signal to cite confidently — undated content is treated as potentially stale.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Publish an /llms.txt file at domain root listing key crawlable content and documentation.",
+      "priority": "low",
+      "detail": "/llms.txt is an emerging standard enabling AI crawlers to discover high-priority markdown and plain-text resources with minimal crawl overhead."
+    }
+  ]
+}

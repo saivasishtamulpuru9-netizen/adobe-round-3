@@ -1,0 +1,258 @@
+{
+  "site": "en.wikipedia.org",
+  "audited_at": "2026-09-08T06:09:00.188998Z",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-08T06:09:00.188998Z",
+  "target_url": "https://en.wikipedia.org/wiki/Tim_Berners-Lee",
+  "pages_audited": [
+    "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+  ],
+  "audit_config": {
+    "max_pages": 1,
+    "timeout_seconds": 30,
+    "skills_run": [
+      "crawl-render-audit",
+      "freshness-corroboration",
+      "engagement-audit",
+      "entity-disambiguation"
+    ]
+  },
+  "summary": {
+    "total_findings": 10,
+    "critical": 0,
+    "high": 3,
+    "medium": 4,
+    "low": 3,
+    "critical_findings": 0,
+    "high_findings": 3,
+    "medium_findings": 4,
+    "low_findings": 3,
+    "total_flag_only": 1,
+    "total_strengths": 4,
+    "overall_health": "poor",
+    "category_scores": {
+      "DV": 4,
+      "FS": 2,
+      "EN": 4,
+      "ED": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "DV-02",
+      "title": "Missing/empty head tags: meta[description], og:description, twitter:title, twitter:description",
+      "severity": "high",
+      "evidence": "Page https://en.wikipedia.org/wiki/Tim_Berners-Lee is missing these <head> fields (absent or empty): meta[description], og:description, twitter:title, twitter:description.",
+      "suggested_action": {
+        "summary": "Add a meta description and OG/Twitter tags summarising 'Tim Berners-Lee - Wikipedia' — currently meta[description], og:description, twitter:title, twitter:description are empty, giving AI assistants no summary text to preview or cite.",
+        "priority": "high"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "EN-01",
+      "title": "Broken/dead links in primary navigation (1 found)",
+      "severity": "high",
+      "evidence": "Found 1 link(s) in primary nav/footer on https://en.wikipedia.org/wiki/Tim_Berners-Lee with href='#' or empty href: '(Top)' → '#'.",
+      "suggested_action": {
+        "summary": "Fix or remove the 1 dead link(s) in navigation: '(Top)' → '#' — dead ends in primary navigation are a direct, confirmed bounce driver.",
+        "priority": "high"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "EN-05",
+      "title": "Interactive content hidden until user interaction (5 tab(s)/section(s))",
+      "severity": "high",
+      "evidence": "Found 5 tab/accordion section(s) on https://en.wikipedia.org/wiki/Tim_Berners-Lee with visible labels but no readable content in raw HTML: 'Article', 'Talk', 'Read'.",
+      "suggested_action": {
+        "summary": "Pre-render at least a one-line summary for each of the 5 tab/section(s) ('Article', 'Talk') so visitors don't need to interact to see any content — the current tabs are invisible to both crawlers and visitors with JS issues.",
+        "priority": "high"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "DV-07",
+      "title": "Testimonials not linked to verifiable external reviews (~11 found)",
+      "severity": "medium",
+      "evidence": "Page https://en.wikipedia.org/wiki/Tim_Berners-Lee has ~11 testimonial/quote element(s) with no links to external review platforms (Google, Trustpilot, G2, LinkedIn, etc.). Generic-phrasing matches: 0. [LLM judgment step: confirm near-identical phrasing across quotes.]",
+      "suggested_action": {
+        "summary": "Link testimonials to verifiable external reviews (Google/LinkedIn/Trustpilot) — the 11 testimonials shown are currently unlinked and unattributed; add name, title, company, and a link to a verifiable source for each.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "DV-09a",
+      "title": "Link-stuffed prose: paragraph with 22 inline links",
+      "severity": "medium",
+      "evidence": "Found 11 paragraph(s) on https://en.wikipedia.org/wiki/Tim_Berners-Lee with > 8 inline links. Worst case: 22 links. Excerpt: 'Berners-Lee was previously a senior researcher and holder of the3Comfounder's ch'.",
+      "suggested_action": {
+        "summary": "Move the 22-link list out of inline prose into a proper navigation/sitemap block — dense link-stuffed paragraphs read as manipulative and can suppress trust in surrounding genuine content.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "FS-01",
+      "title": "Stale 'date claim / banner' references 01 Aug 2025 (403 days ago)",
+      "severity": "medium",
+      "evidence": "Page https://en.wikipedia.org/wiki/Tim_Berners-Lee contains a 'date claim / banner' referencing 01 Aug 2025, which is 403 days in the past. Snippet: 'Habener , Jens Juul Holst , and Svetlana Mojsov 2025: Mary-Claire King 2026: David Klenerman , Shankar Balasubramanian , and Pascal Mayer Portals : Bi'.",
+      "suggested_action": {
+        "summary": "Remove or update the date claim / banner referencing 01 Aug 2025 — that date has passed, and a stale 'current' claim undermines freshness signals for the whole page, especially when other content is actively maintained.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "EN-03",
+      "title": "No breadcrumb trail on nested page (depth 2)",
+      "severity": "medium",
+      "evidence": "Page https://en.wikipedia.org/wiki/Tim_Berners-Lee is 2 levels deep in the site hierarchy with no visible breadcrumb trail and no BreadcrumbList structured data.",
+      "suggested_action": {
+        "summary": "Add a breadcrumb trail (e.g. Home > Wiki > Tim_Berners Lee) — helps visitor orientation and is also a BreadcrumbList schema opportunity.",
+        "priority": "medium"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "DV-15",
+      "title": "Structural DOM duplication: a content block repeats 4× in raw HTML",
+      "severity": "low",
+      "evidence": "On https://en.wikipedia.org/wiki/Tim_Berners-Lee, a content block appears verbatim 4 times in a single raw-HTML fetch. Sample: 'Contentsmove to sidebarhide(Top)1Early life2Career and researchToggle Career and research subsection'. Likely a carousel/slider shipping all clones server-side.",
+      "suggested_action": {
+        "summary": "Render each content block once in the base HTML; if a carousel needs duplicate DOM nodes for infinite-scroll, generate those client-side after initial paint — currently a block repeats verbatim 4× in server-rendered HTML, which reads as manipulative to trust-scoring systems.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "FS-04",
+      "title": "Nav/footer listing mismatch: 'abstract wikipedia' vs 'contact wikipedia' (80% similar)",
+      "severity": "low",
+      "evidence": "Page https://en.wikipedia.org/wiki/Tim_Berners-Lee nav contains 'abstract wikipedia' but footer contains 'contact wikipedia' (80% similar — possible typo or inconsistent naming). Total mismatched pairs: 2.",
+      "suggested_action": {
+        "summary": "Reconcile the nav and footer listings — nav includes 'abstract wikipedia' but footer shows 'contact wikipedia'; a typo or inconsistent name reads as outdated/inconsistent to both visitors and crawlers.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    },
+    {
+      "id": "EN-08",
+      "title": "Stat element has no static value: 'Download as PDFPrintable version'",
+      "severity": "low",
+      "evidence": "Stat/counter element on https://en.wikipedia.org/wiki/Tim_Berners-Lee with label 'Download as PDFPrintable version' has no digit value in raw HTML — likely a JS count-up with no static fallback.",
+      "suggested_action": {
+        "summary": "Provide a real static fallback value in the HTML for 'Download as PDFPrintable version' (JS can still animate the count-up visually) — currently no value appears in a static read.",
+        "priority": "low"
+      },
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    }
+  ],
+  "flag_only_items": [
+    {
+      "id": "EN-06",
+      "type": "flag_only",
+      "reason": "Deep-link matching cannot be verified from a single-page fetch of https://en.wikipedia.org/wiki/Tim_Berners-Lee. AI assistants referring visitors to a brand may link to the homepage rather than the specific product/service page matching the user's query.",
+      "recommendation": "Ensure AI-assistant-referred and search-referred visitors land on the specific product/service page matching their query, not the homepage — verify that deep links exist for each key product/service, with unique URLs and descriptive titles. Test by asking an AI assistant about your key products and checking where it links.",
+      "pages": [
+        "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+      ]
+    }
+  ],
+  "strengths": [
+    {
+      "id": "WIKIDATA-SAMEAS",
+      "title": "Wikidata sameAs link found — entity identity resolved via Wikidata graph."
+    },
+    {
+      "id": "FS-05-POSITIVE",
+      "title": "Disputed/attributed facts are explicitly sourced on https://en.wikipedia.org/wiki/Tim_Berners-Lee — strong corroboration pattern."
+    },
+    {
+      "id": "EN-10",
+      "title": "Clear layered navigation: 45 named nav sections, 15 footer sitemap links — good orientation for both visitors and crawlers."
+    },
+    {
+      "id": "ED-WIKIDATA-SKIP",
+      "title": "All ED checks skipped — entity identity is already anchored to the Wikidata knowledge graph."
+    }
+  ],
+  "suggested_actions": [
+    {
+      "summary": "Add a meta description and OG/Twitter tags summarising 'Tim Berners-Lee - Wikipedia' — currently meta[description], og:description, twitter:title, twitter:description are empty, giving AI assistants no summary text to preview or cite.",
+      "priority": "high",
+      "detail": ""
+    },
+    {
+      "summary": "Fix or remove the 1 dead link(s) in navigation: '(Top)' → '#' — dead ends in primary navigation are a direct, confirmed bounce driver.",
+      "priority": "high",
+      "detail": ""
+    },
+    {
+      "summary": "Pre-render at least a one-line summary for each of the 5 tab/section(s) ('Article', 'Talk') so visitors don't need to interact to see any content — the current tabs are invisible to both crawlers and visitors with JS issues.",
+      "priority": "high",
+      "detail": ""
+    },
+    {
+      "summary": "Link testimonials to verifiable external reviews (Google/LinkedIn/Trustpilot) — the 11 testimonials shown are currently unlinked and unattributed; add name, title, company, and a link to a verifiable source for each.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Move the 22-link list out of inline prose into a proper navigation/sitemap block — dense link-stuffed paragraphs read as manipulative and can suppress trust in surrounding genuine content.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Remove or update the date claim / banner referencing 01 Aug 2025 — that date has passed, and a stale 'current' claim undermines freshness signals for the whole page, especially when other content is actively maintained.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Add a breadcrumb trail (e.g. Home > Wiki > Tim_Berners Lee) — helps visitor orientation and is also a BreadcrumbList schema opportunity.",
+      "priority": "medium",
+      "detail": ""
+    },
+    {
+      "summary": "Render each content block once in the base HTML; if a carousel needs duplicate DOM nodes for infinite-scroll, generate those client-side after initial paint — currently a block repeats verbatim 4× in server-rendered HTML, which reads as manipulative to trust-scoring systems.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Reconcile the nav and footer listings — nav includes 'abstract wikipedia' but footer shows 'contact wikipedia'; a typo or inconsistent name reads as outdated/inconsistent to both visitors and crawlers.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Provide a real static fallback value in the HTML for 'Download as PDFPrintable version' (JS can still animate the count-up visually) — currently no value appears in a static read.",
+      "priority": "low",
+      "detail": ""
+    },
+    {
+      "summary": "Publish an /llms.txt file at domain root listing key crawlable content and documentation.",
+      "priority": "low",
+      "detail": "/llms.txt is an emerging standard enabling AI crawlers to discover high-priority markdown and plain-text resources with minimal crawl overhead."
+    }
+  ]
+}
