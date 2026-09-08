@@ -114,22 +114,23 @@ The CLI flags supported by `compose_report.py` (verified against `argparse` defi
 
 ---
 
-## 📦 Building the Submission Archive
+## 📦 Building the Submission Zip
 
-To generate the official `brand-ai-readiness-audit-submission.zip` archive prior to submission, run the automated build script from the repository root:
+Run `./build_submission.sh` (or `python build_submission.py`) from the repository root before every submission:
 
 ```bash
-# Cross-platform execution (Linux / macOS / Windows):
-python build_submission.py
-
-# Or via shell wrapper on Unix/macOS:
+# Run before every submission to generate a fresh, verified submission zip:
 ./build_submission.sh
 ```
 
-**Automated Build Pipeline:**
-1. **Pre-flight Testing**: Runs all 6 test drivers (184 unit test assertions across discoverability, freshness, engagement, entity disambiguation, and orchestration). If any test suite fails, packaging is immediately aborted.
-2. **Clean Packaging**: Packages `brand-ai-readiness-audit/` into `brand-ai-readiness-audit-submission.zip` at the repository root, excluding temporary files, bytecode, caches (`__pycache__`, `.pytest_cache`, `.git`, `.DS_Store`, `*.pyc`), and binary archives.
-3. **Checksum & Metrics**: Outputs a PASS/FAIL summary, archive size, and SHA-256 checksum for verification.
+**Important Submission Guidelines:**
+- **Always run `./build_submission.sh` before submitting:** Never hand-zip or hand-edit `brand-ai-readiness-audit-submission.zip`.
+- **Gitignored by design:** The submission zip (`brand-ai-readiness-audit-submission.zip`) is explicitly gitignored so it cannot become stale or drift in Git history. Always regenerate it fresh right before uploading to Unstop.
+- **Automated Verification Pipeline:**
+  1. **Pre-flight Testing:** Recursively cleans `__pycache__`, `*.pyc`, and `.DS_Store`, then runs all 6 smoke and stdlib test suites (`smoke_test_dv.py`, `smoke_test_fs.py`, `smoke_test_en.py`, `smoke_test_ed.py`, `smoke_test_orchestrator.py`, and `test_dv_checks_stdlib.py`). If any test fails, packaging is immediately aborted.
+  2. **Clean Root Packaging:** Zips the contents of `brand-ai-readiness-audit/` into `brand-ai-readiness-audit-submission.zip` at the repo root so `marketplace.json` is at the zip's top level with no wrapper folder.
+  3. **Verification & Audit:** Extracts the zip into a temporary directory to verify `marketplace.json` is top-level, all 5 skill folders exist under `skills/`, no `__pycache__`/`.gitignore` leaked in, no stale report files exist in `reports/`, and the zip is under 50 MB.
+  4. **Checksum & Summary:** Prints a clear PASS/FAIL summary, final zip file size, and SHA-256 checksum for visual confirmation.
 
 ---
 
