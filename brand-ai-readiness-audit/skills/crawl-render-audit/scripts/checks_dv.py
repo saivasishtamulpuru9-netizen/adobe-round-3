@@ -810,12 +810,27 @@ def make_dv13_finding(page_result: dict) -> dict:
 
 
 def make_dv16_finding(page_result: dict) -> dict:
+    """
+    Emit a DV-16 (deliberate robots.txt disallow) finding.
+
+    INVARIANT: this function must only ever be called when robots.txt was
+    successfully fetched (HTTP 200) AND parsed AND contains a matching
+    Disallow rule for the target URL.  fetch_page.py's check_robots()
+    guarantees this by returning allowed=False ONLY for that case and for
+    5xx/network-unreachable failures (which map to ROBOTS_UNREACHABLE, not
+    ROBOTS_DISALLOWED).  A 401/403 on the robots.txt URL itself must NEVER
+    reach this function \u2014 it is handled as RFC 9309 \"unavailable\" (fail-open)
+    in check_robots() and produces an inconclusive_bot_block flag instead.
+    If this invariant is violated, the evidence string below will overclaim.
+    """
     url = _page_url(page_result)
     return _make_finding(
         "DV-16",
-        "Deliberate robots.txt disallow — automated crawling explicitly blocked",
+        "Deliberate robots.txt disallow \u2014 automated crawling explicitly blocked",
         "critical",
-        f"The domain's robots.txt explicitly disallows crawling of {url}.",
+        (f"The domain's robots.txt was fetched successfully (HTTP 200), parsed, "
+         f"and contains a matching Disallow rule for {url}. "
+         "This is a declared crawl policy, not a network-layer block."),
         ("This is a deliberate crawl-policy decision. Either publish a crawlable "
          "public-information subset (categories, FAQs, general info) under a "
          "permissive robots.txt group scoped to verified AI/search agents "

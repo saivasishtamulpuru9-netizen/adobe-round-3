@@ -274,15 +274,34 @@ If collision risk exists AND the missing schema lacks `identifier`/`sameAs` fiel
 
 ## DV-16 — Deliberate robots.txt disallow
 
-**Detection:** Script-able. `robots.txt` explicitly disallows `/` (or the specific path) for crawl agents. Distinguishes a declared policy from DV-13's unstated network-layer block.
+**Detection:** Script-able. `robots.txt` was fetched **successfully (HTTP 200)**, parsed, and explicitly disallows `/` (or the specific path) for crawl agents. Distinguishes a declared policy from DV-13's unstated network-layer block.
 
 **Severity:** **Critical** always.
 
 **Cascading rule:** Same as DV-13 → EN-12 + DV-17.
 
-**Template:**  
-> "This is a deliberate robots.txt policy. Publish a crawlable public-information subset (non-transactional:  
-> categories, FAQs, general info) under a permissive robots.txt group scoped to verified AI/search agents,  
+### How 401/403 on the robots.txt URL is disambiguated from a real declared policy
+
+Per **RFC 9309 §2.3.1**, a 4xx response when fetching `robots.txt` means the file is **"unavailable"** — not that the site declares a crawl disallow. The correct crawler behavior for "unavailable" is **fail-open** (assume unrestricted access).
+
+**Fail-closed** (assume complete disallow) is reserved for RFC 9309's **"unreachable"** case: `5xx` responses and network-level failures (timeout, DNS, connection refused).
+
+The implementation in `fetch_page.py :: check_robots()` follows this exactly:
+
+| robots.txt fetch result | RFC 9309 case | `allowed` | `inconclusive_bot_block` | DV fired |
+|-------------------------|---------------|-----------|--------------------------|----------|
+| HTTP 200 + Disallow rule matches | — | `False` | `False` | **DV-16** |
+| HTTP 200 + no matching Disallow | — | `True` | `False` | None |
+| HTTP 401 or 403 | "unavailable" | `True` | `True` | None (note logged; DV-13 may fire if main page also blocked) |
+| HTTP 5xx | "unreachable" | `False` | `False` | Blocked (ROBOTS\_UNREACHABLE, not DV-16) |
+| Network timeout / DNS fail | "unreachable" | `False` | `False` | Blocked (ROBOTS\_UNREACHABLE, not DV-16) |
+| HTTP 404 or other 4xx | "unavailable" | `True` | `False` | None |
+
+**Critical invariant:** `make_dv16_finding()` in `checks_dv.py` must only be called when `robots_disallowed=True` AND `blocked_reason="ROBOTS_DISALLOWED"` — which only happens when robots.txt was HTTP-200-fetched, parsed, and contained a matching rule. A 401/403 on robots.txt must never reach DV-16.
+
+**Template:**
+> "This is a deliberate robots.txt policy. Publish a crawlable public-information subset (non-transactional:
+> categories, FAQs, general info) under a permissive robots.txt group scoped to verified AI/search agents,
 > or explicitly accept that no citation-based discovery is possible."
 
 ---

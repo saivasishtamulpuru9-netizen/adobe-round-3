@@ -500,6 +500,215 @@ class TestMakeFinding(unittest.TestCase):
         self.assertIn("priority", f["suggested_action"])
 
 
+# ── RFC 9309 robots.txt fix regression tests ──────────────────────────────────
+# These tests exercise check_robots() and the fetch_page() gate logic by mocking
+# the network layer via unittest.mock.  No real HTTP calls are made.
+#
+# Four scenarios as required by the bug report:
+#   1. robots.txt → 403, main page → 200: audit proceeds normally, no DV-16.
+#   2. robots.txt → 403, main page → 403: DV-13 fires (bot-block), NOT DV-16.
+#   3. robots.txt → 200 with Disallow: /: DV-16 still fires (no regression).
+#   4. robots.txt network timeout:  fail-closed → audit stops (no regression).
+
+import types as _types
+import sys as _sys
+
+# Ensure fetch_page.py scripts directory is on the path
+_fp_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "skills", "crawl-render-audit", "scripts"
+)
+if _fp_dir not in _sys.path:
+    _sys.path.insert(0, _fp_dir)
+
+
+class TestRobotsRFC9309(unittest.TestCase):
+    """
+    Unit tests for RFC 9309 robots.txt disambiguation in check_robots().
+
+    All tests mock requests.get so no network is required.
+    """
+
+    def _make_response(self, status_code: int, text: str = "") -> object:
+        """Return a minimal mock response object."""
+        r = _types.SimpleNamespace()
+        r.status_code = status_code
+        r.text = text
+        r.headers = {}
+        r.url = "https://example.com/"
+        return r
+
+    def _import_fetch_page(self):
+        """Import fetch_page lazily (needs requests stub available)."""
+        # Stub out requests if not already available, so import doesn't fail.
+        # Must include Response because fetch_page.py uses it as a type annotation.
+        if "requests" not in _sys.modules:
+            req_stub = _types.ModuleType("requests")
+            req_stub.Session = object
+            req_stub.get = lambda *a, **kw: None
+            req_stub.RequestException = Exception
+            # Minimal Response stub for the type annotation on _is_bot_blocked
+            req_stub.Response = _types.SimpleNamespace
+            _sys.modules["requests"] = req_stub
+        else:
+            # Patch Response onto an already-stubbed module if missing
+            req_stub = _sys.modules["requests"]
+            if not hasattr(req_stub, "Response"):
+                req_stub.Response = _types.SimpleNamespace
+        if "bs4" not in _sys.modules:
+            bs4_stub = _types.ModuleType("bs4")
+            bs4_stub.BeautifulSoup = FakeBeautifulSoup
+            _sys.modules["bs4"] = bs4_stub
+        if "fetch_page" in _sys.modules:
+            fp = _sys.modules["fetch_page"]
+        else:
+            import fetch_page as fp
+        return fp
+
+    def test_robots_403_main_page_200_no_dv16(self):
+        """
+        Scenario 1: robots.txt returns 403 (WAF blocks robots fetch),
+        main page returns 200 and is auditable.
+        Expected: robots_inconclusive=True, robots_disallowed=False,
+                  audit proceeds, no blocked flag.
+        DV-16 must NOT fire in run_dv_checks.
+        """
+        fp = self._import_fetch_page()
+        from unittest.mock import patch, MagicMock
+
+        robots_resp = self._make_response(403)
+        good_html = ("<html><head><title>MakeMyTrip</title>"
+                     "<meta name='description' content='Travel site'/></head>"
+                     "<body>" + " ".join(["word"] * 300) + "</body></html>")
+        page_resp = self._make_response(200, good_html)
+        page_resp.url = "https://www.makemytrip.com/"
+
+        def fake_get(url, **kwargs):
+            if "robots.txt" in url:
+                return robots_resp
+            return page_resp
+
+        session_mock = MagicMock()
+        session_mock.get.side_effect = lambda url, **kw: page_resp
+
+        with patch.object(fp.requests, "get", side_effect=fake_get):
+            result = fp.check_robots("https://www.makemytrip.com/")
+
+        # RFC 9309: 403 on robots.txt → "unavailable" → fail-open
+        self.assertTrue(result["allowed"],
+                        "403 on robots.txt must NOT set allowed=False (RFC 9309 unavailable)")
+        self.assertTrue(result.get("inconclusive_bot_block"),
+                        "403 on robots.txt must set inconclusive_bot_block=True")
+        self.assertIsNone(result.get("disallow_rule"),
+                          "No disallow_rule should be set for inconclusive case")
+
+        # Also verify run_dv_checks on a page_result built with these flags
+        # does not fire DV-16
+        page_result = make_page(
+            url="https://www.makemytrip.com/",
+            word_count=300,
+            robots_disallowed=False,
+            blocked=False,
+        )
+        # Inject the new fields that fetch_page now adds
+        page_result["robots_inconclusive"] = True
+        page_result["robots_inconclusive_note"] = "robots.txt could not be verified (HTTP 403)"
+        dv_result = dv.run_dv_checks(page_result)
+        ids = finding_ids(dv_result)
+        self.assertNotIn("DV-16", ids,
+                         "DV-16 must NOT fire when robots.txt was inconclusive (403 on robots URL)")
+        self.assertFalse(dv_result.get("flags", {}).get("dv13_fired", False),
+                         "DV-13 must NOT fire when main page succeeded")
+
+    def test_robots_403_main_page_403_dv13_not_dv16(self):
+        """
+        Scenario 2: robots.txt returns 403, main page ALSO returns 403.
+        Expected: DV-13 (bot-block) fires via run_dv_checks on a page_result
+                  where blocked=True, blocked_reason='BOT_BLOCK'. DV-16 must NOT fire.
+        """
+        # Simulate a page_result where robots was inconclusive but main page was bot-blocked
+        page_result = make_page(
+            url="https://www.makemytrip.com/",
+            word_count=0,
+            blocked=True,
+            blocked_reason="BOT_BLOCK",
+            robots_disallowed=False,
+        )
+        page_result["http_status"] = 403
+        page_result["robots_inconclusive"] = True
+        page_result["robots_inconclusive_note"] = "robots.txt could not be verified (HTTP 403)"
+        page_result["raw_html"] = None
+        page_result["has_raw_html"] = False
+
+        dv_result = dv.run_dv_checks(page_result)
+        ids = finding_ids(dv_result)
+
+        self.assertIn("DV-13", ids,
+                      "DV-13 must fire when main page fetch is bot-blocked")
+        self.assertNotIn("DV-16", ids,
+                         "DV-16 must NOT fire — this is a bot-block, not a declared disallow")
+        self.assertTrue(dv_result.get("flags", {}).get("dv13_fired", False))
+
+    def test_robots_200_disallow_fires_dv16(self):
+        """
+        Scenario 3: robots.txt returns 200 with 'Disallow: /' for *.
+        Expected: DV-16 fires (no regression on the correct case).
+        check_robots() must return allowed=False, inconclusive_bot_block=False.
+        """
+        fp = self._import_fetch_page()
+        from unittest.mock import patch
+
+        robots_txt = "User-agent: *\nDisallow: /\n"
+        robots_resp = self._make_response(200, robots_txt)
+
+        with patch.object(fp.requests, "get", return_value=robots_resp):
+            result = fp.check_robots("https://www.example.com/")
+
+        self.assertFalse(result["allowed"],
+                         "Disallow: / must set allowed=False")
+        self.assertFalse(result.get("inconclusive_bot_block", True),
+                         "A real Disallow rule must NOT set inconclusive_bot_block")
+        self.assertIsNotNone(result.get("disallow_rule"),
+                             "disallow_rule must be set for a genuine Disallow match")
+
+        # Verify DV-16 fires in run_dv_checks
+        page_result = make_page(
+            url="https://www.example.com/",
+            word_count=0,
+            robots_disallowed=True,
+            blocked=True,
+            blocked_reason="ROBOTS_DISALLOWED",
+        )
+        dv_result = dv.run_dv_checks(page_result)
+        ids = finding_ids(dv_result)
+        self.assertIn("DV-16", ids,
+                      "DV-16 must still fire when robots.txt genuinely disallows the URL")
+
+    def test_robots_timeout_fail_closed(self):
+        """
+        Scenario 4: robots.txt fetch raises a network timeout exception.
+        RFC 9309 'unreachable' → fail-closed (allowed=False).
+        Audit must stop; no DV-16 finding (reason is ROBOTS_UNREACHABLE via error field).
+        """
+        fp = self._import_fetch_page()
+        from unittest.mock import patch
+
+        def raise_timeout(*args, **kwargs):
+            raise Exception("Connection timed out")
+
+        with patch.object(fp.requests, "get", side_effect=raise_timeout):
+            result = fp.check_robots("https://www.example.com/")
+
+        self.assertFalse(result["allowed"],
+                         "Network timeout on robots.txt must fail-closed (RFC 9309 unreachable)")
+        self.assertFalse(result.get("inconclusive_bot_block", True),
+                         "Network timeout must NOT set inconclusive_bot_block")
+        self.assertIn("error", result,
+                      "Error key must be present for network failure")
+        self.assertIsNotNone(result.get("disallow_rule"),
+                             "disallow_rule set to url for fail-closed case")
+
+
 if __name__ == "__main__":
     loader = unittest.TestLoader()
     suite = loader.loadTestsFromModule(sys.modules[__name__])

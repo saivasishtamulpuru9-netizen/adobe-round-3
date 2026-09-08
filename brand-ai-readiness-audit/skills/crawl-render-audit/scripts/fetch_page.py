@@ -189,10 +189,23 @@ def check_robots(url: str) -> dict:
     Returns
     -------
     dict with keys:
-      allowed       bool   – whether our user-agent may crawl this URL
-      robots_url    str    – URL of the robots.txt that was checked
-      disallow_rule str|None
-      error         str|None  – only present on fetch failure
+      allowed               bool      – whether our user-agent may crawl this URL
+      robots_url            str       – URL of the robots.txt that was checked
+      disallow_rule         str|None  – matching Disallow rule, if any
+      inconclusive_bot_block bool     – True when robots.txt returned 401/403
+                                        (RFC 9309 "unavailable" → fail-open)
+      error                 str|None  – only present on network-level failure
+
+    RFC 9309 status-code semantics
+    --------------------------------
+    200   → parse and apply rules normally
+    401/403 → "unavailable" (WAF/auth layer blocking the robots.txt fetch itself)
+              → fail-OPEN (allowed=True) but set inconclusive_bot_block=True so
+                fetch_page() knows the check was inconclusive.  Do NOT fire DV-16
+                here — only a successfully-parsed Disallow rule may fire DV-16.
+    5xx / network error → "unreachable" (RFC 9309) → fail-CLOSED (allowed=False).
+                This is the only case other than a parsed Disallow that blocks crawl.
+    404 / other 4xx → treat as "no restrictions" (allowed=True, no disallow rule).
     """
     parsed = urllib.parse.urlparse(url)
     base = f"{parsed.scheme}://{parsed.netloc}"
@@ -202,38 +215,64 @@ def check_robots(url: str) -> dict:
     rp.set_url(robots_url)
     try:
         r = requests.get(robots_url, headers={"User-Agent": USER_AGENT}, timeout=6)
+
         if r.status_code == 200:
             rp.parse(r.text.splitlines())
-        elif r.status_code in {401, 403}:
-            # Deliberate disallow
+            # Check both our specific agent and the wildcard agent.
+            # INVARIANT: disallow_rule is only set when robots.txt was successfully
+            # fetched AND parsed AND contains a matching rule — DV-16 must never
+            # fire based on a 4xx/5xx response to the robots.txt URL itself.
+            allowed_specific = rp.can_fetch(USER_AGENT, url)
+            allowed_wildcard = rp.can_fetch("*", url)
+            allowed = allowed_specific and allowed_wildcard
             return {
                 "robots_url": robots_url,
-                "allowed": False,
-                "disallow_rule": url,
+                "allowed": allowed,
+                "disallow_rule": None if allowed else url,
+                "inconclusive_bot_block": False,
             }
-        else:
-            # 404 or other status → allow
+
+        elif r.status_code in {401, 403}:
+            # RFC 9309 §2.3.1 "unavailable" — the robots.txt file could not be
+            # retrieved due to an auth/WAF layer, NOT a declared crawl policy.
+            # Fail-open: allow the crawl but flag as inconclusive so fetch_page()
+            # can propagate a low-severity note and let DV-13 fire if the main
+            # page fetch is also blocked.  Never set robots_disallowed / DV-16 here.
             return {
                 "robots_url": robots_url,
                 "allowed": True,
                 "disallow_rule": None,
+                "inconclusive_bot_block": True,
+                "inconclusive_status": r.status_code,
             }
 
-        # Check both our specific agent and the wildcard agent
-        allowed_specific = rp.can_fetch(USER_AGENT, url)
-        allowed_wildcard = rp.can_fetch("*", url)
-        allowed = allowed_specific and allowed_wildcard
-        return {
-            "robots_url": robots_url,
-            "allowed": allowed,
-            "disallow_rule": None if allowed else url,
-        }
+        elif r.status_code >= 500:
+            # RFC 9309 §2.3.1 "unreachable" — server-side error → fail-closed.
+            return {
+                "robots_url": robots_url,
+                "allowed": False,
+                "disallow_rule": url,
+                "inconclusive_bot_block": False,
+                "error": f"robots.txt server error: HTTP {r.status_code}",
+            }
+
+        else:
+            # 404 or any other non-200/non-4xx status → no restrictions.
+            return {
+                "robots_url": robots_url,
+                "allowed": True,
+                "disallow_rule": None,
+                "inconclusive_bot_block": False,
+            }
+
     except Exception as exc:
-        # If robots.txt is unreachable (e.g. timeout), assume allowed (fail open)
+        # Network-level failure (timeout, DNS, connection refused) = RFC 9309
+        # "unreachable" → fail-closed (same as 5xx).
         return {
             "robots_url": robots_url,
-            "allowed": True,
-            "disallow_rule": None,
+            "allowed": False,
+            "disallow_rule": url,
+            "inconclusive_bot_block": False,
             "error": str(exc),
         }
 
@@ -310,6 +349,8 @@ def fetch_page(
         "blocked": False,
         "blocked_reason": None,
         "robots_disallowed": False,
+        "robots_inconclusive": False,   # True when robots.txt returned 401/403
+        "robots_inconclusive_note": None,  # low-severity note string if set
         "noindex": False,
         "head": {},
         "raw_html": None,
@@ -325,11 +366,29 @@ def fetch_page(
 
     # ── Step 1: robots.txt ───────────────────────────────────────────────────
     robots_info = check_robots(clean_url)
+
     if not robots_info["allowed"]:
+        # Only a successfully-parsed Disallow rule OR a 5xx/network failure
+        # reaches here (RFC 9309 "unreachable" fail-closed case).
+        # A 401/403 on robots.txt never sets allowed=False — see check_robots().
         result["robots_disallowed"] = True
         result["blocked"] = True
-        result["blocked_reason"] = "ROBOTS_DISALLOWED"
+        result["blocked_reason"] = robots_info.get("error") and "ROBOTS_UNREACHABLE" or "ROBOTS_DISALLOWED"
         return result
+
+    if robots_info.get("inconclusive_bot_block"):
+        # RFC 9309 "unavailable": robots.txt returned 401/403 (likely WAF/auth
+        # blocking the robots.txt fetch itself, not a declared crawl policy).
+        # Fail-open: proceed to fetch the main page.  If that fetch also hits a
+        # bot-block, DV-13 will fire and own the finding.  If the main-page
+        # fetch succeeds, we log a low-severity note and run the audit normally.
+        status_code = robots_info.get("inconclusive_status", "4xx")
+        result["robots_inconclusive"] = True
+        result["robots_inconclusive_note"] = (
+            f"robots.txt could not be verified (HTTP {status_code} on "
+            f"{robots_info['robots_url']}); crawl proceeded on the main page "
+            "per RFC 9309 'unavailable' semantics. DV-16 was NOT fired."
+        )
 
     # ── Step 2: Fetch ────────────────────────────────────────────────────────
     if delay > 0:
