@@ -35,7 +35,7 @@ adobe-round-3/
     │   ├── kisansuvidha.json
     │   ├── noindex_en11.json
     │   ├── python_org.json
-    │   ├── tgbie_bot_block.json
+    │   ├── synthetic_bot_block_dv13.json
     │   └── wikipedia_tim.json
     └── skills/                                    # Modular Agent Skills (agentskills.io compliant)
         ├── audit-orchestrator/                    # [ENTRYPOINT: true] Orchestrates sub-skills & emits report
