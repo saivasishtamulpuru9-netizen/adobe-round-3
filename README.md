@@ -18,7 +18,8 @@ The actual file and directory layout of this repository:
 ```
 adobe-round-3/
 ├── README.md                                      # Repository root documentation (this file)
-├── brand-ai-readiness-audit-submission.zip        # Official submission zip archive (< 50 MB)
+├── build_submission.py                            # Automated test runner & submission packaging script
+├── build_submission.sh                            # Cross-platform shell wrapper for submission build
 └── brand-ai-readiness-audit/                      # Marketplace root directory (what is zipped)
     ├── README.md                                  # Complete technical marketplace documentation
     ├── marketplace.json                           # Marketplace manifest (lists 5 skills, entrypoint)
@@ -112,6 +113,26 @@ The CLI flags supported by `compose_report.py` (verified against `argparse` defi
 - `--out FILE` *(optional)*: Writes JSON report to specified file path instead of stdout.
 
 ---
+
+## 📦 Building the Submission Archive
+
+To generate the official `brand-ai-readiness-audit-submission.zip` archive prior to submission, run the automated build script from the repository root:
+
+```bash
+# Cross-platform execution (Linux / macOS / Windows):
+python build_submission.py
+
+# Or via shell wrapper on Unix/macOS:
+./build_submission.sh
+```
+
+**Automated Build Pipeline:**
+1. **Pre-flight Testing**: Runs all 6 test drivers (184 unit test assertions across discoverability, freshness, engagement, entity disambiguation, and orchestration). If any test suite fails, packaging is immediately aborted.
+2. **Clean Packaging**: Packages `brand-ai-readiness-audit/` into `brand-ai-readiness-audit-submission.zip` at the repository root, excluding temporary files, bytecode, caches (`__pycache__`, `.pytest_cache`, `.git`, `.DS_Store`, `*.pyc`), and binary archives.
+3. **Checksum & Metrics**: Outputs a PASS/FAIL summary, archive size, and SHA-256 checksum for verification.
+
+---
+
 
 ## 🛡️ Scope & Guardrails Compliance
 

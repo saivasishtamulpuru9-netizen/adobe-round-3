@@ -311,7 +311,14 @@ Run all test suites sequentially:
 python smoke_test_dv.py; python smoke_test_fs.py; python smoke_test_en.py; python smoke_test_ed.py; python smoke_test_orchestrator.py; python test_dv_checks_stdlib.py
 ```
 
+Alternatively, to run all tests and package the submission zip automatically:
+```bash
+# From repository root:
+python build_submission.py  # or ./build_submission.sh
+```
+
 ---
+
 
 ## 6. Reports Directory Audit & Findings Summary
 
