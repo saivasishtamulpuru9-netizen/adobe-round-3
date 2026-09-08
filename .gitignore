@@ -1,8 +1,12 @@
+brand-ai-readiness-audit-submission.zip
+**/__pycache__/
+*.pyc
+.DS_Store
 __pycache__/
 *.py[cod]
 *$py.class
-.DS_Store
 .vscode/
 .idea/
 *.zip
+
 
