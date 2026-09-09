@@ -9,7 +9,10 @@ This script:
 3. Aborts packaging if any test suite fails.
 4. Packages the CONTENTS of `brand-ai-readiness-audit/` into
    `brand-ai-readiness-audit-submission.zip` at the repo root.
-5. Extracts and verifies the freshly built zip against requirements.
+5. Extracts and verifies the freshly built zip against requirements:
+   - Ensures top-level marketplace.json and 5 skill folders.
+   - Rejects leaked __pycache__, .pyc, .gitignore files.
+   - Rejects known stale report files (e.g. tgbie_bot_block.json).
 6. Outputs a PASS/FAIL summary including zip size and SHA-256 checksum.
 """
 
